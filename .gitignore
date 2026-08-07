@@ -50,3 +50,8 @@ docker-compose.override.yml
 Thumbs.db
 .vscode/
 .idea/
+#===================================
+#ENV File
+#===================================
+.env
+.env.example
