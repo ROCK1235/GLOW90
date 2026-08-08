@@ -9,6 +9,7 @@ import userRoutes from './modules/users/routes/userRoutes.js';
 import habitRoutes from './modules/habits/routes/habitRoutes.js';
 import supplementRoutes from './modules/supplements/routes/supplementRoutes.js';
 import skincareRoutes from './modules/skincare/routes/skincareRoutes.js';
+import waterRoutes from './modules/water/routes/waterRoutes.js';
 
 export function createApp(): express.Application {
   const app = express();
@@ -36,6 +37,7 @@ export function createApp(): express.Application {
   app.use('/api/v1/habits', habitRoutes);
   app.use('/api/v1/supplements', supplementRoutes);
   app.use('/api/v1/skincare', skincareRoutes);
+  app.use('/api/v1/water', waterRoutes);
 
   // 404 & Error handlers
   app.use(notFoundHandler);

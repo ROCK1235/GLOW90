@@ -33,6 +33,12 @@ export const updateSettingsSchema = z.object({
         })
         .strict()
         .optional(),
+      hydration: z
+        .object({
+          dailyGoalMl: z.number().positive().max(10000).optional(),
+        })
+        .strict()
+        .optional(),
     })
     .strict(),
 });

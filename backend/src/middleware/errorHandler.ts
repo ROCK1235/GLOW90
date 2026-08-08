@@ -30,6 +30,7 @@ const KNOWN_ERROR_STATUS: Record<string, number> = {
   HABIT_NOT_FOUND: 404,
   SUPPLEMENT_NOT_FOUND: 404,
   SKINCARE_ROUTINE_NOT_FOUND: 404,
+  WATER_LOG_NOT_FOUND: 404,
 };
 
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {

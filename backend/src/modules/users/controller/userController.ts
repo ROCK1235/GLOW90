@@ -27,6 +27,7 @@ function toPublicSettings(settings: IUserSettings) {
   return {
     theme: settings.theme,
     notifications: settings.notifications,
+    hydration: settings.hydration,
   };
 }
 

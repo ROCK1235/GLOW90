@@ -11,7 +11,8 @@
     { "key": "resetToken", "value": "", "type": "string" },
     { "key": "habitId", "value": "", "type": "string" },
     { "key": "supplementId", "value": "", "type": "string" },
-    { "key": "routineId", "value": "", "type": "string" }
+    { "key": "routineId", "value": "", "type": "string" },
+    { "key": "waterLogId", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -585,6 +586,75 @@
             "method": "DELETE",
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
             "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Water",
+      "item": [
+        {
+          "name": "Set Hydration Goal",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hydration\": {\n    \"dailyGoalMl\": 2000\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me/settings", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me", "settings"] }
+          }
+        },
+        {
+          "name": "Log Water",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('waterLogId', body.data.log._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amountMl\": 250\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/water/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "water", "logs"] }
+          }
+        },
+        {
+          "name": "Get Daily Summary",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/water/summary", "host": ["{{baseUrl}}"], "path": ["api", "v1", "water", "summary"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/water/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "water", "logs"] }
+          }
+        },
+        {
+          "name": "Undo Log (by id)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/water/logs/{{waterLogId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "water", "logs", "{{waterLogId}}"] }
           }
         }
       ]
