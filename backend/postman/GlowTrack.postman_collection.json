@@ -658,6 +658,60 @@
           }
         }
       ]
+    },
+    {
+      "name": "Weight",
+      "item": [
+        {
+          "name": "Log Weight",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"weightKg\": 70.5,\n  \"date\": \"2026-08-08\",\n  \"bodyFatPercent\": 18.5,\n  \"measurements\": {\n    \"waistCm\": 80\n  },\n  \"note\": \"Weighed first thing in the morning\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/weight/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "weight", "logs"] }
+          }
+        },
+        {
+          "name": "Get Latest",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/weight/logs/latest", "host": ["{{baseUrl}}"], "path": ["api", "v1", "weight", "logs", "latest"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weight/logs?from=2026-05-01&to=2026-08-08",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "weight", "logs"],
+              "query": [
+                { "key": "from", "value": "2026-05-01" },
+                { "key": "to", "value": "2026-08-08" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Log (by date)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weight/logs/2026-08-08",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "weight", "logs", "2026-08-08"]
+            }
+          }
+        }
+      ]
     }
   ]
 }
