@@ -28,6 +28,7 @@ const KNOWN_ERROR_STATUS: Record<string, number> = {
   INVALID_APPLE_TOKEN: 401,
   OAUTH_EMAIL_REQUIRED: 422,
   HABIT_NOT_FOUND: 404,
+  SUPPLEMENT_NOT_FOUND: 404,
 };
 
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {

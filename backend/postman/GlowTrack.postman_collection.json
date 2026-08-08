@@ -9,7 +9,8 @@
     { "key": "accessToken", "value": "", "type": "string" },
     { "key": "refreshToken", "value": "", "type": "string" },
     { "key": "resetToken", "value": "", "type": "string" },
-    { "key": "habitId", "value": "", "type": "string" }
+    { "key": "habitId", "value": "", "type": "string" },
+    { "key": "supplementId", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -348,6 +349,121 @@
             "method": "DELETE",
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
             "url": { "raw": "{{baseUrl}}/api/v1/habits/{{habitId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "habits", "{{habitId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supplements",
+      "item": [
+        {
+          "name": "Create Supplement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('supplementId', body.data.supplement._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Vitamin D\",\n  \"dosageAmount\": 1000,\n  \"dosageUnit\": \"iu\",\n  \"daysOfWeek\": [],\n  \"times\": [\"08:00\", \"20:00\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements"] }
+          }
+        },
+        {
+          "name": "List Supplements",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/supplements?includeArchived=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "supplements"],
+              "query": [{ "key": "includeArchived", "value": "false" }]
+            }
+          }
+        },
+        {
+          "name": "Get Supplement",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}"] }
+          }
+        },
+        {
+          "name": "Update Supplement",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dosageAmount\": 2000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}"] }
+          }
+        },
+        {
+          "name": "Log Dose",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"time\": \"08:00\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}", "logs"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}", "logs"] }
+          }
+        },
+        {
+          "name": "Undo Dose (by date/time)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}/logs/2026-08-08/08:00",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "supplements", "{{supplementId}}", "logs", "2026-08-08", "08:00"]
+            }
+          }
+        },
+        {
+          "name": "Get Adherence",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}/adherence", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}", "adherence"] }
+          }
+        },
+        {
+          "name": "Archive Supplement",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}"] }
           }
         }
       ]
