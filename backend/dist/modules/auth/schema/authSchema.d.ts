@@ -143,6 +143,45 @@ export declare const resetPasswordSchema: z.ZodObject<{
         token: string;
     };
 }>;
+export declare const googleAuthSchema: z.ZodObject<{
+    body: z.ZodObject<{
+        idToken: z.ZodString;
+    }, "strip", z.ZodTypeAny, {
+        idToken: string;
+    }, {
+        idToken: string;
+    }>;
+}, "strip", z.ZodTypeAny, {
+    body: {
+        idToken: string;
+    };
+}, {
+    body: {
+        idToken: string;
+    };
+}>;
+export declare const appleAuthSchema: z.ZodObject<{
+    body: z.ZodObject<{
+        idToken: z.ZodString;
+        name: z.ZodOptional<z.ZodString>;
+    }, "strip", z.ZodTypeAny, {
+        idToken: string;
+        name?: string | undefined;
+    }, {
+        idToken: string;
+        name?: string | undefined;
+    }>;
+}, "strip", z.ZodTypeAny, {
+    body: {
+        idToken: string;
+        name?: string | undefined;
+    };
+}, {
+    body: {
+        idToken: string;
+        name?: string | undefined;
+    };
+}>;
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type RefreshInput = z.infer<typeof refreshSchema>['body'];
@@ -150,4 +189,6 @@ export type LogoutInput = z.infer<typeof logoutSchema>['body'];
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>['body'];
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body'];
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>['body'];
+export type GoogleAuthInput = z.infer<typeof googleAuthSchema>['body'];
+export type AppleAuthInput = z.infer<typeof appleAuthSchema>['body'];
 //# sourceMappingURL=authSchema.d.ts.map

@@ -31,6 +31,20 @@ declare class AuthService {
     }>;
     refreshTokens(refreshToken: string, userAgent?: string, ip?: string): Promise<TokenPair>;
     logout(refreshToken: string): Promise<void>;
+    private googleClient;
+    private verifyGoogleToken;
+    private verifyAppleToken;
+    private findOrCreateOAuthUser;
+    loginWithGoogle(idToken: string, userAgent?: string, ip?: string): Promise<{
+        user: IUser;
+        settings: IUserSettings;
+        tokens: TokenPair;
+    }>;
+    loginWithApple(idToken: string, name: string | undefined, userAgent?: string, ip?: string): Promise<{
+        user: IUser;
+        settings: IUserSettings;
+        tokens: TokenPair;
+    }>;
     private generateTokenPair;
     changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void>;
     forgotPassword(email: string): Promise<string | null>;

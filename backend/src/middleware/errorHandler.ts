@@ -14,6 +14,22 @@ export class AppError extends Error {
   }
 }
 
+const KNOWN_ERROR_STATUS: Record<string, number> = {
+  EMAIL_EXISTS: 409,
+  INVALID_CREDENTIALS: 401,
+  ACCOUNT_SUSPENDED: 403,
+  INVALID_REFRESH_TOKEN: 401,
+  TOKEN_REUSED: 401,
+  USER_NOT_FOUND: 404,
+  INVALID_CURRENT_PASSWORD: 401,
+  INVALID_RESET_TOKEN: 400,
+  OAUTH_ACCOUNT_NO_PASSWORD: 409,
+  INVALID_GOOGLE_TOKEN: 401,
+  INVALID_APPLE_TOKEN: 401,
+  OAUTH_EMAIL_REQUIRED: 422,
+  HABIT_NOT_FOUND: 404,
+};
+
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {
   logger.error({ err, path: req.path, method: req.method }, 'Request error');
 
@@ -21,6 +37,14 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
     res.status(err.statusCode).json({
       success: false,
       error: { code: err.code, message: err.message, details: err.details },
+    });
+    return;
+  }
+
+  if (err.message in KNOWN_ERROR_STATUS) {
+    res.status(KNOWN_ERROR_STATUS[err.message]).json({
+      success: false,
+      error: { code: err.message, message: err.message },
     });
     return;
   }

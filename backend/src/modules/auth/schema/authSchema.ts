@@ -47,6 +47,19 @@ export const resetPasswordSchema = z.object({
   }),
 });
 
+export const googleAuthSchema = z.object({
+  body: z.object({
+    idToken: z.string().min(1),
+  }),
+});
+
+export const appleAuthSchema = z.object({
+  body: z.object({
+    idToken: z.string().min(1),
+    name: z.string().min(1).max(100).optional(),
+  }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type RefreshInput = z.infer<typeof refreshSchema>['body'];
@@ -54,3 +67,5 @@ export type LogoutInput = z.infer<typeof logoutSchema>['body'];
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>['body'];
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body'];
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>['body'];
+export type GoogleAuthInput = z.infer<typeof googleAuthSchema>['body'];
+export type AppleAuthInput = z.infer<typeof appleAuthSchema>['body'];

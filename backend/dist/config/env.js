@@ -7,12 +7,6 @@ exports.loadEnv = loadEnv;
 exports.getEnv = getEnv;
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
-const dotenvResult = dotenv_1.default.config({
-    path: path_1.default.resolve(process.cwd(), ".env"),
-});
-console.log("Dotenv:", dotenvResult);
-console.log("CWD:", process.cwd());
-console.log("JWT_ACCESS_SECRET:", process.env.JWT_ACCESS_SECRET);
 // import dotenv from 'dotenv';
 // import path from 'path';
 const zod_1 = require("zod");
@@ -36,6 +30,8 @@ const envSchema = zod_1.z.object({
     JWT_REFRESH_SECRET: zod_1.z.string().min(32),
     JWT_ACCESS_EXPIRY: zod_1.z.string().default('15m'),
     JWT_REFRESH_EXPIRY: zod_1.z.string().default('30d'),
+    GOOGLE_CLIENT_IDS: zod_1.z.string().optional().default(''),
+    APPLE_CLIENT_ID: zod_1.z.string().optional().default(''),
     CORS_ORIGIN: zod_1.z.string().default('http://localhost:8081'),
     RATE_LIMIT_WINDOW_MS: zod_1.z.coerce.number().default(60000),
     RATE_LIMIT_MAX_REQUESTS: zod_1.z.coerce.number().default(120),

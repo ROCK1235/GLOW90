@@ -1,9 +1,9 @@
-import { IUserOwnedDocument } from './user-owned.interface.js';
+import { IUserOwnedDocument } from "./user-owned.interface.js";
 export interface ILogDocument extends IUserOwnedDocument {
     localDate: string;
     loggedAt: Date;
     tzOffsetMinutes: number;
-    source: 'manual' | 'reminder' | 'import' | 'wearable';
+    source: "manual" | "reminder" | "import" | "wearable";
     clientLogId: string;
 }
 export interface PaginatedResult<T> {

@@ -7,6 +7,8 @@ exports.authService = void 0;
 const argon2_1 = __importDefault(require("argon2"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const google_auth_library_1 = require("google-auth-library");
+const apple_signin_auth_1 = __importDefault(require("apple-signin-auth"));
 const crypto_1 = require("crypto");
 const env_js_1 = require("../../../config/env.js");
 const authRepository_js_1 = require("../repository/authRepository.js");
@@ -43,6 +45,9 @@ class AuthService {
         }
         if (user.status !== 'active') {
             throw new Error('ACCOUNT_SUSPENDED');
+        }
+        if (!user.passwordHash) {
+            throw new Error('OAUTH_ACCOUNT_NO_PASSWORD');
         }
         const valid = await argon2_1.default.verify(user.passwordHash, password);
         if (!valid) {
@@ -85,6 +90,83 @@ class AuthService {
         }
         await authRepository_js_1.authRepository.revokeTokenFamily(payload.userId, payload.family);
     }
+    googleClient = new google_auth_library_1.OAuth2Client();
+    async verifyGoogleToken(idToken) {
+        const { GOOGLE_CLIENT_IDS } = (0, env_js_1.getEnv)();
+        const audiences = GOOGLE_CLIENT_IDS.split(',').map((id) => id.trim()).filter(Boolean);
+        let payload;
+        try {
+            const ticket = await this.googleClient.verifyIdToken({
+                idToken,
+                audience: audiences.length ? audiences : undefined,
+            });
+            payload = ticket.getPayload();
+        }
+        catch {
+            throw new Error('INVALID_GOOGLE_TOKEN');
+        }
+        if (!payload?.sub || payload.email_verified === false) {
+            throw new Error('INVALID_GOOGLE_TOKEN');
+        }
+        return { providerId: payload.sub, email: payload.email ?? null, name: payload.name };
+    }
+    async verifyAppleToken(idToken) {
+        const { APPLE_CLIENT_ID } = (0, env_js_1.getEnv)();
+        let payload;
+        try {
+            payload = await apple_signin_auth_1.default.verifyIdToken(idToken, {
+                audience: APPLE_CLIENT_ID || undefined,
+                ignoreExpiration: false,
+            });
+        }
+        catch {
+            throw new Error('INVALID_APPLE_TOKEN');
+        }
+        if (!payload?.sub) {
+            throw new Error('INVALID_APPLE_TOKEN');
+        }
+        return { providerId: payload.sub, email: payload.email ?? null };
+    }
+    async findOrCreateOAuthUser(provider, identity, fallbackName, userAgent, ip) {
+        let user = await authRepository_js_1.authRepository.findUserByProvider(provider, identity.providerId);
+        if (!user && identity.email) {
+            const existingByEmail = await authRepository_js_1.authRepository.findUserByEmail(identity.email);
+            if (existingByEmail) {
+                user = await authRepository_js_1.authRepository.addProviderToUser(existingByEmail._id.toString(), provider, identity.providerId);
+            }
+        }
+        if (!user) {
+            if (!identity.email) {
+                throw new Error('OAUTH_EMAIL_REQUIRED');
+            }
+            user = await authRepository_js_1.authRepository.createUser({
+                email: identity.email.toLowerCase(),
+                passwordHash: null,
+                name: identity.name || fallbackName || identity.email.split('@')[0],
+                status: 'active',
+                authProviders: [{ provider, providerId: identity.providerId }],
+            });
+            await authRepository_js_1.authRepository.createSettings(user._id.toString());
+        }
+        if (user.status !== 'active') {
+            throw new Error('ACCOUNT_SUSPENDED');
+        }
+        let settings = await authRepository_js_1.authRepository.findSettingsByUserId(user._id.toString());
+        if (!settings) {
+            settings = await authRepository_js_1.authRepository.createSettings(user._id.toString());
+        }
+        const family = this.generateTokenFamily();
+        const tokens = await this.generateTokenPair(user._id.toString(), family, userAgent, ip);
+        return { user, settings, tokens };
+    }
+    async loginWithGoogle(idToken, userAgent, ip) {
+        const identity = await this.verifyGoogleToken(idToken);
+        return this.findOrCreateOAuthUser('google', identity, undefined, userAgent, ip);
+    }
+    async loginWithApple(idToken, name, userAgent, ip) {
+        const identity = await this.verifyAppleToken(idToken);
+        return this.findOrCreateOAuthUser('apple', identity, name, userAgent, ip);
+    }
     async generateTokenPair(userId, family, userAgent, ip) {
         const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_ACCESS_EXPIRY, JWT_REFRESH_EXPIRY } = (0, env_js_1.getEnv)();
         const accessToken = jsonwebtoken_1.default.sign({ userId, tokenVersion: 1 }, JWT_ACCESS_SECRET, { expiresIn: JWT_ACCESS_EXPIRY });
@@ -105,6 +187,8 @@ class AuthService {
         const user = await authRepository_js_1.authRepository.findUserById(userId);
         if (!user)
             throw new Error('USER_NOT_FOUND');
+        if (!user.passwordHash)
+            throw new Error('OAUTH_ACCOUNT_NO_PASSWORD');
         const valid = await argon2_1.default.verify(user.passwordHash, currentPassword);
         if (!valid)
             throw new Error('INVALID_CURRENT_PASSWORD');

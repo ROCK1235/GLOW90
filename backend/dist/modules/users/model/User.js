@@ -37,9 +37,17 @@ exports.UserModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const UserSchema = new mongoose_1.Schema({
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, default: null },
+    authProviders: [
+        {
+            provider: { type: String, enum: ['google', 'apple'], required: true },
+            providerId: { type: String, required: true },
+            _id: false,
+        },
+    ],
     name: { type: String, required: true, trim: true },
     status: { type: String, enum: ['active', 'suspended', 'deleted'], required: true, default: 'active' },
 }, { timestamps: true });
+UserSchema.index({ 'authProviders.provider': 1, 'authProviders.providerId': 1 }, { unique: true, sparse: true });
 exports.UserModel = mongoose_1.default.model('User', UserSchema);
 //# sourceMappingURL=User.js.map
