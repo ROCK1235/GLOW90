@@ -10,7 +10,8 @@
     { "key": "refreshToken", "value": "", "type": "string" },
     { "key": "resetToken", "value": "", "type": "string" },
     { "key": "habitId", "value": "", "type": "string" },
-    { "key": "supplementId", "value": "", "type": "string" }
+    { "key": "supplementId", "value": "", "type": "string" },
+    { "key": "routineId", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -464,6 +465,126 @@
             "method": "DELETE",
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
             "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Skincare",
+      "item": [
+        {
+          "name": "Create Routine",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('routineId', body.data.routine._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Morning Routine\",\n  \"timeOfDay\": \"AM\",\n  \"steps\": [\n    { \"name\": \"Cleanser\" },\n    { \"name\": \"Moisturizer\" },\n    { \"name\": \"SPF\", \"product\": \"Some Sunscreen\" }\n  ],\n  \"daysOfWeek\": []\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines"] }
+          }
+        },
+        {
+          "name": "List Routines",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/skincare/routines?includeArchived=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "skincare", "routines"],
+              "query": [{ "key": "includeArchived", "value": "false" }]
+            }
+          }
+        },
+        {
+          "name": "Get Routine",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}"] }
+          }
+        },
+        {
+          "name": "Update Routine",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Morning Glow Routine\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}"] }
+          }
+        },
+        {
+          "name": "Log Progress (partial)",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"completedSteps\": [1]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}", "logs"] }
+          }
+        },
+        {
+          "name": "Log Complete (all steps)",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}", "logs"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}", "logs"] }
+          }
+        },
+        {
+          "name": "Undo Log (by date)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}/logs/2026-08-08",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "skincare", "routines", "{{routineId}}", "logs", "2026-08-08"]
+            }
+          }
+        },
+        {
+          "name": "Archive Routine",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}"] }
           }
         }
       ]
