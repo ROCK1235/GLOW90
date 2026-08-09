@@ -220,7 +220,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Name\",\n  \"units\": \"imperial\",\n  \"heightCm\": 178,\n  \"goals\": {\n    \"type\": \"weight_loss\",\n    \"targetWeightKg\": 70\n  }\n}"
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"units\": \"imperial\",\n  \"heightCm\": 178,\n  \"phoneNumber\": \"+1 555 123 4567\",\n  \"dateOfBirth\": \"1998-05-04\",\n  \"sex\": \"female\",\n  \"goals\": {\n    \"type\": \"weight_loss\",\n    \"targetWeightKg\": 70\n  }\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me"] }
           }
@@ -380,7 +380,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Vitamin D\",\n  \"dosageAmount\": 1000,\n  \"dosageUnit\": \"iu\",\n  \"daysOfWeek\": [],\n  \"times\": [\"08:00\", \"20:00\"]\n}"
+              "raw": "{\n  \"name\": \"Vitamin D\",\n  \"dosageAmount\": 1000,\n  \"dosageUnit\": \"iu\",\n  \"foodTiming\": \"after_food\",\n  \"daysOfWeek\": [],\n  \"times\": [\"08:00\", \"20:00\"]\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/supplements", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements"] }
           }

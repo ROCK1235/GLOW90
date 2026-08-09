@@ -15,6 +15,7 @@ function makeSupplement(overrides: Record<string, unknown> = {}) {
     name: 'Vitamin D',
     dosageAmount: 1000,
     dosageUnit: 'iu',
+    foodTiming: 'anytime',
     notes: null,
     schedule: { daysOfWeek: [], times: ['09:00'] },
     isActive: true,
@@ -55,6 +56,45 @@ describe('SupplementService Unit Tests', () => {
 
       expect(supplementRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({ schedule: { daysOfWeek: [], times: ['09:00'] } })
+      );
+    });
+
+    it('defaults foodTiming to anytime when omitted', async () => {
+      vi.mocked(supplementRepository.create).mockResolvedValueOnce(makeSupplement());
+
+      await supplementService.createSupplement(mockUserId, {
+        name: 'Vitamin D',
+        dosageAmount: 1000,
+        dosageUnit: 'iu',
+      } as any);
+
+      expect(supplementRepository.create).toHaveBeenCalledWith(expect.objectContaining({ foodTiming: 'anytime' }));
+    });
+
+    it('passes through an explicit foodTiming', async () => {
+      vi.mocked(supplementRepository.create).mockResolvedValueOnce(makeSupplement({ foodTiming: 'after_food' }));
+
+      await supplementService.createSupplement(mockUserId, {
+        name: 'Vitamin D',
+        dosageAmount: 1000,
+        dosageUnit: 'iu',
+        foodTiming: 'after_food',
+      } as any);
+
+      expect(supplementRepository.create).toHaveBeenCalledWith(expect.objectContaining({ foodTiming: 'after_food' }));
+    });
+  });
+
+  describe('updateSupplement', () => {
+    it('passes foodTiming through to the repository unchanged', async () => {
+      vi.mocked(supplementRepository.findById).mockResolvedValueOnce(makeSupplement());
+      vi.mocked(supplementRepository.update).mockResolvedValueOnce(makeSupplement({ foodTiming: 'before_food' }));
+
+      await supplementService.updateSupplement(mockUserId, mockSupplementId, { foodTiming: 'before_food' } as any);
+
+      expect(supplementRepository.update).toHaveBeenCalledWith(
+        mockSupplementId,
+        expect.objectContaining({ foodTiming: 'before_food' })
       );
     });
   });

@@ -4,6 +4,7 @@ const dateStrSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Expected date in 
 const timeStrSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Expected time in HH:mm format');
 const daysOfWeekSchema = z.array(z.number().int().min(0).max(6)).max(7);
 const dosageUnitSchema = z.enum(['mg', 'mcg', 'g', 'ml', 'iu', 'tablet', 'capsule', 'drop']);
+const foodTimingSchema = z.enum(['before_food', 'after_food', 'with_food', 'anytime']);
 
 export const createSupplementSchema = z.object({
   body: z
@@ -11,6 +12,7 @@ export const createSupplementSchema = z.object({
       name: z.string().min(1).max(100),
       dosageAmount: z.number().positive(),
       dosageUnit: dosageUnitSchema,
+      foodTiming: foodTimingSchema.optional(),
       notes: z.string().max(500).nullable().optional(),
       daysOfWeek: daysOfWeekSchema.optional(),
       times: z.array(timeStrSchema).min(1).max(10).optional(),
@@ -24,6 +26,7 @@ export const updateSupplementSchema = z.object({
       name: z.string().min(1).max(100).optional(),
       dosageAmount: z.number().positive().optional(),
       dosageUnit: dosageUnitSchema.optional(),
+      foodTiming: foodTimingSchema.optional(),
       notes: z.string().max(500).nullable().optional(),
       daysOfWeek: daysOfWeekSchema.optional(),
       times: z.array(timeStrSchema).min(1).max(10).optional(),

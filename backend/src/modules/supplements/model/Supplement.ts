@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import { IUserOwnedDocument } from '../../../common/interfaces/index.js';
 
 export type DosageUnit = 'mg' | 'mcg' | 'g' | 'ml' | 'iu' | 'tablet' | 'capsule' | 'drop';
+export type FoodTiming = 'before_food' | 'after_food' | 'with_food' | 'anytime';
 
 export interface ISupplementSchedule {
   daysOfWeek: number[];
@@ -12,6 +13,7 @@ export interface ISupplement extends IUserOwnedDocument {
   name: string;
   dosageAmount: number;
   dosageUnit: DosageUnit;
+  foodTiming: FoodTiming;
   notes: string | null;
   schedule: ISupplementSchedule;
   isActive: boolean;
@@ -27,6 +29,12 @@ const SupplementSchema = new Schema<ISupplement>(
       type: String,
       enum: ['mg', 'mcg', 'g', 'ml', 'iu', 'tablet', 'capsule', 'drop'],
       required: true,
+    },
+    foodTiming: {
+      type: String,
+      enum: ['before_food', 'after_food', 'with_food', 'anytime'],
+      required: true,
+      default: 'anytime',
     },
     notes: { type: String, default: null, maxlength: 500 },
     schedule: {

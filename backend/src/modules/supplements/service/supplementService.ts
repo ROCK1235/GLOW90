@@ -11,6 +11,7 @@ class SupplementService {
       name: data.name,
       dosageAmount: data.dosageAmount,
       dosageUnit: data.dosageUnit,
+      foodTiming: data.foodTiming ?? 'anytime',
       notes: data.notes ?? null,
       schedule: {
         daysOfWeek: data.daysOfWeek ?? [],

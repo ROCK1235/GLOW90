@@ -18,6 +18,7 @@ export interface IUser extends IBaseDocument {
   authProviders: IAuthProvider[];
   name: string;
   avatarUrl: string | null;
+  phoneNumber: string | null;
   dateOfBirth: Date | null;
   sex: 'male' | 'female' | 'other' | null;
   heightCm: number | null;
@@ -51,6 +52,7 @@ const UserSchema = new Schema<IUser>(
     ],
     name: { type: String, required: true, trim: true },
     avatarUrl: { type: String, default: null },
+    phoneNumber: { type: String, default: null, trim: true },
     dateOfBirth: { type: Date, default: null },
     sex: { type: String, enum: ['male', 'female', 'other'], default: null },
     heightCm: { type: Number, default: null },

@@ -4,7 +4,8 @@ export const updateProfileSchema = z.object({
   body: z
     .object({
       name: z.string().min(1).max(100).optional(),
-      avatarUrl: z.string().url().nullable().optional(),
+      avatarUrl: z.string().min(1).nullable().optional(),
+      phoneNumber: z.string().trim().min(1).max(20).nullable().optional(),
       dateOfBirth: z.coerce.date().nullable().optional(),
       sex: z.enum(['male', 'female', 'other']).nullable().optional(),
       heightCm: z.number().positive().max(300).nullable().optional(),

@@ -8,6 +8,7 @@ function toPublicUser(user: IUser) {
     email: user.email,
     name: user.name,
     avatarUrl: user.avatarUrl,
+    phoneNumber: user.phoneNumber,
     dateOfBirth: user.dateOfBirth,
     sex: user.sex,
     heightCm: user.heightCm,
