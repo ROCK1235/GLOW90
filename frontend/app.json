@@ -20,6 +20,12 @@
       "expo-secure-store",
       "@react-native-community/datetimepicker",
       "expo-notifications"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "64abef7e-ea8f-4fbb-8d26-5fd3aa5aea88"
+      }
+    },
+    "owner": "ayushd1235"
   }
 }
