@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "GlowTrack",
+    "slug": "glowtrack",
+    "scheme": "glowtrack",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.glowtrack.app"
+    },
+    "android": {
+      "package": "com.glowtrack.app"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "@react-native-community/datetimepicker",
+      "expo-notifications"
+    ]
+  }
+}

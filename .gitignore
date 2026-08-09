@@ -1,0 +1,61 @@
+# ==============================================================================
+# 📦 DEPENDENCIES & WORKSPACES
+# ==============================================================================
+node_modules/
+/packages/*/node_modules/
+/backend/node_modules/
+/frontend/node_modules/
+.pnpm-store/
+yarn.lock
+package-lock.json
+
+# ==============================================================================
+# 🔐 SECRETS & ENVIRONMENT VARIABLES (Never commit these!)
+# ==============================================================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.pem
+*.key
+
+# ==============================================================================
+# 🚀 BUILD OUTPUTS & CACHES
+# ==============================================================================
+# Frontend & Backend builds
+dist/
+build/
+.next/
+.nuxt/
+out/
+.cache/
+.eslintcache
+
+# ==============================================================================
+# 🐋 DOCKER & DATABASES
+# ==============================================================================
+.docker/
+docker-compose.override.yml
+*.db
+*.sqlite
+*.log
+
+# ==============================================================================
+# 💻 SYSTEM JUNK
+# ==============================================================================
+.DS_Store
+.DS_Store?
+Thumbs.db
+.vscode/
+.idea/
+#===================================
+#ENV File
+#===================================
+.env
+.env.example
+node_modules
+
+# Expo
+.expo/
