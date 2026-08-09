@@ -7,6 +7,8 @@ declare const envSchema: z.ZodObject<{
     JWT_REFRESH_SECRET: z.ZodString;
     JWT_ACCESS_EXPIRY: z.ZodDefault<z.ZodString>;
     JWT_REFRESH_EXPIRY: z.ZodDefault<z.ZodString>;
+    GOOGLE_CLIENT_IDS: z.ZodDefault<z.ZodOptional<z.ZodString>>;
+    APPLE_CLIENT_ID: z.ZodDefault<z.ZodOptional<z.ZodString>>;
     CORS_ORIGIN: z.ZodDefault<z.ZodString>;
     RATE_LIMIT_WINDOW_MS: z.ZodDefault<z.ZodNumber>;
     RATE_LIMIT_MAX_REQUESTS: z.ZodDefault<z.ZodNumber>;
@@ -24,6 +26,8 @@ declare const envSchema: z.ZodObject<{
     JWT_REFRESH_SECRET: string;
     JWT_ACCESS_EXPIRY: string;
     JWT_REFRESH_EXPIRY: string;
+    GOOGLE_CLIENT_IDS: string;
+    APPLE_CLIENT_ID: string;
     CORS_ORIGIN: string;
     RATE_LIMIT_WINDOW_MS: number;
     RATE_LIMIT_MAX_REQUESTS: number;
@@ -41,6 +45,8 @@ declare const envSchema: z.ZodObject<{
     MONGODB_URI?: string | undefined;
     JWT_ACCESS_EXPIRY?: string | undefined;
     JWT_REFRESH_EXPIRY?: string | undefined;
+    GOOGLE_CLIENT_IDS?: string | undefined;
+    APPLE_CLIENT_ID?: string | undefined;
     CORS_ORIGIN?: string | undefined;
     RATE_LIMIT_WINDOW_MS?: number | undefined;
     RATE_LIMIT_MAX_REQUESTS?: number | undefined;

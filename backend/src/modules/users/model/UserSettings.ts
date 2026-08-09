@@ -6,6 +6,9 @@ export interface IUserSettings extends IUserOwnedDocument {
   notifications: {
     general: boolean;
   };
+  hydration: {
+    dailyGoalMl: number;
+  };
 }
 
 const UserSettingsSchema = new Schema<IUserSettings>(
@@ -14,6 +17,9 @@ const UserSettingsSchema = new Schema<IUserSettings>(
     theme: { type: String, enum: ['system', 'light', 'dark'], required: true, default: 'system' },
     notifications: {
       general: { type: Boolean, default: true },
+    },
+    hydration: {
+      dailyGoalMl: { type: Number, required: true, default: 2500, min: 0 },
     },
   },
   { timestamps: true }

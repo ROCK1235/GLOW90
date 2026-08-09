@@ -5,6 +5,7 @@ import { logger } from '../config/logger.js';
 
 export interface AuthPayload {
   userId: string;
+  email?: string;
   tokenVersion: number;
   iat: number;
   exp: number;

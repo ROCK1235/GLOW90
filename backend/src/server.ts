@@ -8,7 +8,6 @@ async function bootstrap() {
   const env = loadEnv();
 
   await connectDB();
-  logger.info('Database connected successfully');
 
   registerAllJobs();
   startJobs();

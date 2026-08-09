@@ -8,6 +8,8 @@ export declare class AuthController {
     changePassword(req: Request, res: Response): Promise<void>;
     forgotPassword(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
+    google(req: Request, res: Response): Promise<void>;
+    apple(req: Request, res: Response): Promise<void>;
 }
 export declare const authController: AuthController;
 //# sourceMappingURL=authController.d.ts.map

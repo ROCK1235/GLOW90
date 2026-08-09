@@ -195,6 +195,96 @@ describe('Auth Routes Integration Tests', () => {
     });
   });
 
+  describe('POST /api/v1/auth/google', () => {
+    it('returns 422 when idToken is missing', async () => {
+      const res = await fetch(`${baseUrl}/api/v1/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+
+      expect(res.status).toBe(422);
+    });
+
+    it('returns 200 with tokens on successful google auth', async () => {
+      vi.mocked(authService.loginWithGoogle).mockResolvedValueOnce({
+        user: { _id: 'u1', email: 'test@example.com', name: 'Test User', status: 'active' } as any,
+        settings: { theme: 'system' } as any,
+        tokens: { accessToken: 'g_access', refreshToken: 'g_refresh' },
+      });
+
+      const res = await fetch(`${baseUrl}/api/v1/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: 'valid.google.token' }),
+      });
+
+      const body = await res.json();
+      expect(res.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data.tokens.accessToken).toBe('g_access');
+    });
+
+    it('returns 401 when the google token is invalid', async () => {
+      vi.mocked(authService.loginWithGoogle).mockRejectedValueOnce(new Error('INVALID_GOOGLE_TOKEN'));
+
+      const res = await fetch(`${baseUrl}/api/v1/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: 'invalid.token' }),
+      });
+
+      const body = await res.json();
+      expect(res.status).toBe(401);
+      expect(body.error.code).toBe('INVALID_GOOGLE_TOKEN');
+    });
+  });
+
+  describe('POST /api/v1/auth/apple', () => {
+    it('returns 422 when idToken is missing', async () => {
+      const res = await fetch(`${baseUrl}/api/v1/auth/apple`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+
+      expect(res.status).toBe(422);
+    });
+
+    it('returns 200 with tokens on successful apple auth', async () => {
+      vi.mocked(authService.loginWithApple).mockResolvedValueOnce({
+        user: { _id: 'u1', email: 'test@example.com', name: 'Test User', status: 'active' } as any,
+        settings: { theme: 'system' } as any,
+        tokens: { accessToken: 'a_access', refreshToken: 'a_refresh' },
+      });
+
+      const res = await fetch(`${baseUrl}/api/v1/auth/apple`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: 'valid.apple.token', name: 'Test User' }),
+      });
+
+      const body = await res.json();
+      expect(res.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data.tokens.accessToken).toBe('a_access');
+    });
+
+    it('returns 422 when the apple token is invalid', async () => {
+      vi.mocked(authService.loginWithApple).mockRejectedValueOnce(new Error('OAUTH_EMAIL_REQUIRED'));
+
+      const res = await fetch(`${baseUrl}/api/v1/auth/apple`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: 'valid.apple.token' }),
+      });
+
+      const body = await res.json();
+      expect(res.status).toBe(422);
+      expect(body.error.code).toBe('OAUTH_EMAIL_REQUIRED');
+    });
+  });
+
   describe('POST /api/v1/auth/forgot-password & reset-password', () => {
     it('returns generic success message for forgot password', async () => {
       vi.mocked(authService.forgotPassword).mockResolvedValueOnce('mock_token');

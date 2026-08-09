@@ -1,5 +1,6 @@
 import { registerJob } from './scheduler.js';
 import { logger } from '../config/logger.js';
+import { habitService } from '../modules/habits/service/habitService.js';
 
 export function registerReminderJob(): void {
   registerJob({
@@ -23,7 +24,8 @@ export function registerStreakRepairJob(): void {
     intervalMs: 24 * 60 * 60 * 1000, // Daily at midnight UTC
     handler: async () => {
       logger.debug('Running streak repair job');
-      // TODO: Recompute streaks for users whose counters may have drifted
+      const repaired = await habitService.repairStreaks();
+      logger.debug({ repaired }, 'Streak repair completed');
     },
   });
 }

@@ -1,0 +1,717 @@
+{
+  "info": {
+    "name": "GlowTrack API",
+    "description": "GlowTrack backend routes. Run 'Register' or 'Login' first — the access/refresh tokens are auto-saved to collection variables and reused by the protected requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" },
+    { "key": "resetToken", "value": "", "type": "string" },
+    { "key": "habitId", "value": "", "type": "string" },
+    { "key": "supplementId", "value": "", "type": "string" },
+    { "key": "routineId", "value": "", "type": "string" },
+    { "key": "waterLogId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', body.data.tokens.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', body.data.tokens.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', body.data.tokens.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', body.data.tokens.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', body.data.tokens.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', body.data.tokens.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "me"] }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "password"] }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// In dev, authService.forgotPassword returns the raw reset token in server logs only.",
+                  "// Grab it from your terminal logs and paste it into the 'resetToken' collection variable to test Reset Password."
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "forgot-password"] }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"newPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "reset-password"] }
+          }
+        },
+        {
+          "name": "Google Sign-In",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"<paste a real Google ID token here>\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/google", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "google"] }
+          }
+        },
+        {
+          "name": "Apple Sign-In",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"<paste a real Apple identity token here>\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/apple", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "apple"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/logout", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me"] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"units\": \"imperial\",\n  \"heightCm\": 178,\n  \"goals\": {\n    \"type\": \"weight_loss\",\n    \"targetWeightKg\": 70\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me"] }
+          }
+        },
+        {
+          "name": "Update Settings",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"dark\",\n  \"notifications\": {\n    \"general\": true\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me/settings", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me", "settings"] }
+          }
+        },
+        {
+          "name": "Complete Onboarding",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me/onboarding/complete", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me", "onboarding", "complete"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Habits",
+      "item": [
+        {
+          "name": "Create Habit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('habitId', body.data.habit._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Drink Water\",\n  \"icon\": \"\\ud83d\\udca7\",\n  \"daysOfWeek\": [],\n  \"reminderTime\": \"09:00\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/habits", "host": ["{{baseUrl}}"], "path": ["api", "v1", "habits"] }
+          }
+        },
+        {
+          "name": "List Habits",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/habits?includeArchived=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "habits"],
+              "query": [{ "key": "includeArchived", "value": "false" }]
+            }
+          }
+        },
+        {
+          "name": "Get Habit",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/habits/{{habitId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "habits", "{{habitId}}"] }
+          }
+        },
+        {
+          "name": "Update Habit",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Drink 2L Water\",\n  \"daysOfWeek\": [1, 3, 5]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/habits/{{habitId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "habits", "{{habitId}}"] }
+          }
+        },
+        {
+          "name": "Log Completion (today)",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/habits/{{habitId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "habits", "{{habitId}}", "logs"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/habits/{{habitId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "habits", "{{habitId}}", "logs"] }
+          }
+        },
+        {
+          "name": "Undo Log (by date)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/habits/{{habitId}}/logs/2026-08-08",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "habits", "{{habitId}}", "logs", "2026-08-08"]
+            }
+          }
+        },
+        {
+          "name": "Archive Habit",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/habits/{{habitId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "habits", "{{habitId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supplements",
+      "item": [
+        {
+          "name": "Create Supplement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('supplementId', body.data.supplement._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Vitamin D\",\n  \"dosageAmount\": 1000,\n  \"dosageUnit\": \"iu\",\n  \"daysOfWeek\": [],\n  \"times\": [\"08:00\", \"20:00\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements"] }
+          }
+        },
+        {
+          "name": "List Supplements",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/supplements?includeArchived=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "supplements"],
+              "query": [{ "key": "includeArchived", "value": "false" }]
+            }
+          }
+        },
+        {
+          "name": "Get Supplement",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}"] }
+          }
+        },
+        {
+          "name": "Update Supplement",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dosageAmount\": 2000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}"] }
+          }
+        },
+        {
+          "name": "Log Dose",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"time\": \"08:00\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}", "logs"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}", "logs"] }
+          }
+        },
+        {
+          "name": "Undo Dose (by date/time)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}/logs/2026-08-08/08:00",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "supplements", "{{supplementId}}", "logs", "2026-08-08", "08:00"]
+            }
+          }
+        },
+        {
+          "name": "Get Adherence",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}/adherence", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}", "adherence"] }
+          }
+        },
+        {
+          "name": "Archive Supplement",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/supplements/{{supplementId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "supplements", "{{supplementId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Skincare",
+      "item": [
+        {
+          "name": "Create Routine",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('routineId', body.data.routine._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Morning Routine\",\n  \"timeOfDay\": \"AM\",\n  \"steps\": [\n    { \"name\": \"Cleanser\" },\n    { \"name\": \"Moisturizer\" },\n    { \"name\": \"SPF\", \"product\": \"Some Sunscreen\" }\n  ],\n  \"daysOfWeek\": []\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines"] }
+          }
+        },
+        {
+          "name": "List Routines",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/skincare/routines?includeArchived=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "skincare", "routines"],
+              "query": [{ "key": "includeArchived", "value": "false" }]
+            }
+          }
+        },
+        {
+          "name": "Get Routine",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}"] }
+          }
+        },
+        {
+          "name": "Update Routine",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Morning Glow Routine\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}"] }
+          }
+        },
+        {
+          "name": "Log Progress (partial)",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"completedSteps\": [1]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}", "logs"] }
+          }
+        },
+        {
+          "name": "Log Complete (all steps)",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}", "logs"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}", "logs"] }
+          }
+        },
+        {
+          "name": "Undo Log (by date)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}/logs/2026-08-08",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "skincare", "routines", "{{routineId}}", "logs", "2026-08-08"]
+            }
+          }
+        },
+        {
+          "name": "Archive Routine",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/skincare/routines/{{routineId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "skincare", "routines", "{{routineId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Water",
+      "item": [
+        {
+          "name": "Set Hydration Goal",
+          "request": {
+            "method": "PATCH",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hydration\": {\n    \"dailyGoalMl\": 2000\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me/settings", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me", "settings"] }
+          }
+        },
+        {
+          "name": "Log Water",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('waterLogId', body.data.log._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amountMl\": 250\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/water/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "water", "logs"] }
+          }
+        },
+        {
+          "name": "Get Daily Summary",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/water/summary", "host": ["{{baseUrl}}"], "path": ["api", "v1", "water", "summary"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/water/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "water", "logs"] }
+          }
+        },
+        {
+          "name": "Undo Log (by id)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/water/logs/{{waterLogId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "water", "logs", "{{waterLogId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Weight",
+      "item": [
+        {
+          "name": "Log Weight",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"weightKg\": 70.5,\n  \"date\": \"2026-08-08\",\n  \"bodyFatPercent\": 18.5,\n  \"measurements\": {\n    \"waistCm\": 80\n  },\n  \"note\": \"Weighed first thing in the morning\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/weight/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "weight", "logs"] }
+          }
+        },
+        {
+          "name": "Get Latest",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": { "raw": "{{baseUrl}}/api/v1/weight/logs/latest", "host": ["{{baseUrl}}"], "path": ["api", "v1", "weight", "logs", "latest"] }
+          }
+        },
+        {
+          "name": "List Logs",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weight/logs?from=2026-05-01&to=2026-08-08",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "weight", "logs"],
+              "query": [
+                { "key": "from", "value": "2026-05-01" },
+                { "key": "to", "value": "2026-08-08" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Log (by date)",
+          "request": {
+            "method": "DELETE",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weight/logs/2026-08-08",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "weight", "logs", "2026-08-08"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

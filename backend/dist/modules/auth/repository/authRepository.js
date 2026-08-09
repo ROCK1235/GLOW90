@@ -10,6 +10,12 @@ class AuthRepository {
     async findUserByEmail(email) {
         return index_js_1.UserModel.findOne({ email: email.toLowerCase() }).exec();
     }
+    async findUserByProvider(provider, providerId) {
+        return index_js_1.UserModel.findOne({ authProviders: { $elemMatch: { provider, providerId } } }).exec();
+    }
+    async addProviderToUser(userId, provider, providerId) {
+        return index_js_1.UserModel.findByIdAndUpdate(userId, { $addToSet: { authProviders: { provider, providerId } } }, { new: true }).exec();
+    }
     async findUserById(userId) {
         return index_js_1.UserModel.findById(userId).exec();
     }

@@ -88,6 +88,7 @@ export class AuthController {
       data: {
         user: {
           id: req.user.userId,
+          email: req.user.email,
         },
       },
     });
@@ -131,6 +132,50 @@ export class AuthController {
     logger.info('Password reset completed');
 
     res.json({ success: true, data: { message: 'Password reset successfully' } });
+  }
+
+  async google(req: Request, res: Response): Promise<void> {
+    const { idToken } = req.body;
+
+    const result = await authService.loginWithGoogle(idToken, req.headers['user-agent'], req.ip);
+
+    logger.info({ userId: result.user._id }, 'User authenticated via Google');
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: result.user._id,
+          email: result.user.email,
+          name: result.user.name,
+          status: result.user.status,
+        },
+        settings: result.settings,
+        tokens: result.tokens,
+      },
+    });
+  }
+
+  async apple(req: Request, res: Response): Promise<void> {
+    const { idToken, name } = req.body;
+
+    const result = await authService.loginWithApple(idToken, name, req.headers['user-agent'], req.ip);
+
+    logger.info({ userId: result.user._id }, 'User authenticated via Apple');
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: result.user._id,
+          email: result.user.email,
+          name: result.user.name,
+          status: result.user.status,
+        },
+        settings: result.settings,
+        tokens: result.tokens,
+      },
+    });
   }
 }
 

@@ -1,33 +1,23 @@
-import dotenv from "dotenv";
-import path from "path";
-
-
-// import dotenv from 'dotenv';
-// import path from 'path';
+import dotenv from 'dotenv';
+import path from 'path';
 import { z } from 'zod';
 
 dotenv.config({
   path: path.resolve(process.cwd(), '.env'),
 });
-const result = dotenv.config({
-  path: path.resolve(process.cwd(), ".env"),
-});
-
-console.log("Dotenv result:", result);
-console.log("Working Directory:", process.cwd());
-console.log("JWT_ACCESS_SECRET:", process.env.JWT_ACCESS_SECRET);
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(4000),
   MONGODB_URI: z
-    .string()
-    .regex(/^mongodb(\+srv)?:\/\//, 'Invalid MongoDB URI')
-    .default('mongodb://localhost:27017/glowtrack'),
+    .string({ required_error: 'MONGODB_URI is required' })
+    .regex(/^mongodb(\+srv)?:\/\//, 'Invalid MongoDB URI'),
   JWT_ACCESS_SECRET: z.string().min(32),
   JWT_REFRESH_SECRET: z.string().min(32),
   JWT_ACCESS_EXPIRY: z.string().default('15m'),
   JWT_REFRESH_EXPIRY: z.string().default('30d'),
+  GOOGLE_CLIENT_IDS: z.string().optional().default(''),
+  APPLE_CLIENT_ID: z.string().optional().default(''),
   CORS_ORIGIN: z.string().default('http://localhost:8081'),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(60000),
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(120),
@@ -48,6 +38,7 @@ export function loadEnv(): Env {
   if (process.env.NODE_ENV === 'test') {
     process.env.JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'test_jwt_access_secret_32_chars_long!';
     process.env.JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'test_jwt_refresh_secret_32_chars_long!';
+    process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/glowtrack_test';
     process.env.RATE_LIMIT_MAX_REQUESTS = process.env.RATE_LIMIT_MAX_REQUESTS || '1000';
     process.env.AUTH_RATE_LIMIT_MAX = process.env.AUTH_RATE_LIMIT_MAX || '1000';
   }

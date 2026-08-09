@@ -4,6 +4,8 @@ import { UpdateQuery } from 'mongoose';
 export declare class AuthRepository {
     createUser(userData: Partial<IUser>): Promise<IUser>;
     findUserByEmail(email: string): Promise<IUser | null>;
+    findUserByProvider(provider: 'google' | 'apple', providerId: string): Promise<IUser | null>;
+    addProviderToUser(userId: string, provider: 'google' | 'apple', providerId: string): Promise<IUser | null>;
     findUserById(userId: string): Promise<IUser | null>;
     updateUser(userId: string, update: UpdateQuery<IUser>): Promise<IUser | null>;
     deleteUser(userId: string): Promise<void>;

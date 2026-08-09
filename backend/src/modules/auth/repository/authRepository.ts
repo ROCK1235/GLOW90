@@ -1,38 +1,47 @@
-import { UserModel, IUser, UserSettingsModel, IUserSettings } from '../../users/model/index.js';
-import { RefreshTokenModel, IRefreshToken } from '../model/RefreshToken.js';
 import { UpdateQuery } from 'mongoose';
+import { IUser, IUserSettings } from '../../users/model/index.js';
+import { userRepository } from '../../users/repository/userRepository.js';
+import { RefreshTokenModel, IRefreshToken } from '../model/RefreshToken.js';
 
 export class AuthRepository {
   async createUser(userData: Partial<IUser>): Promise<IUser> {
-    return UserModel.create(userData);
+    return userRepository.create(userData);
   }
 
   async findUserByEmail(email: string): Promise<IUser | null> {
-    return UserModel.findOne({ email: email.toLowerCase() }).exec();
+    return userRepository.findByEmail(email);
+  }
+
+  async findUserByProvider(provider: 'google' | 'apple', providerId: string): Promise<IUser | null> {
+    return userRepository.findByProvider(provider, providerId);
+  }
+
+  async addProviderToUser(userId: string, provider: 'google' | 'apple', providerId: string): Promise<IUser | null> {
+    return userRepository.addProvider(userId, provider, providerId);
   }
 
   async findUserById(userId: string): Promise<IUser | null> {
-    return UserModel.findById(userId).exec();
+    return userRepository.findById(userId);
   }
 
   async updateUser(userId: string, update: UpdateQuery<IUser>): Promise<IUser | null> {
-    return UserModel.findByIdAndUpdate(userId, update, { new: true }).exec();
+    return userRepository.update(userId, update);
   }
 
   async deleteUser(userId: string): Promise<void> {
-    await UserModel.findByIdAndUpdate(userId, { status: 'deleted' }).exec();
+    return userRepository.softDelete(userId);
   }
 
   async createSettings(userId: string): Promise<IUserSettings> {
-    return UserSettingsModel.create({ userId });
+    return userRepository.createSettings(userId);
   }
 
   async findSettingsByUserId(userId: string): Promise<IUserSettings | null> {
-    return UserSettingsModel.findOne({ userId }).exec();
+    return userRepository.findSettingsByUserId(userId);
   }
 
   async updateSettings(userId: string, update: UpdateQuery<IUserSettings>): Promise<IUserSettings | null> {
-    return UserSettingsModel.findOneAndUpdate({ userId }, update, { new: true, upsert: true }).exec();
+    return userRepository.updateSettings(userId, update);
   }
 
   async createRefreshToken(tokenData: Partial<IRefreshToken>): Promise<IRefreshToken> {
